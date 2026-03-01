@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { InputBox } from "./components";
 import useCurrencyInfo from "./hooks/useCurrencyInfo";
 
@@ -6,27 +6,23 @@ function App() {
   const [amount, setAmount] = useState(0);
   const [from, setFrom] = useState("USD");
   const [to, setTo] = useState("INR");
-  const [convertedAmount, setConvertedAmount] = useState(0);
 
   const currencyInfo = useCurrencyInfo(from);
   const options = Object.keys(currencyInfo);
+  const rate = currencyInfo[to];
+  const convertedAmount = rate ? amount * rate : 0;
 
   const swap = () => {
     setFrom(to);
     setTo(from);
     setAmount(convertedAmount);
-    setConvertedAmount(amount);
-  };
-
-  const convert = () => {
-    setConvertedAmount(amount * currencyInfo[to]);
   };
 
   return (
     <div
       className="w-full h-screen flex flex-wrap justify-center items-center bg-cover bg-no-repeat"
       style={{
-        backgroundImage: `url('https://img.freepik.com/free-vector/collection-digital-money-symbol-world-map-background-design_1017-58861.jpg?ga=GA1.1.1319801036.1763198663&semt=ais_hybrid&w=740&q=80')`,
+        backgroundImage: `url('https://img.freepik.com/free-vector/worldwide-3d-globe-map-with-neon-effect-vector-design_1017-61899.jpg?ga=GA1.1.1319801036.1763198663&semt=ais_hybrid&w=740&q=80')`,
       }}
     >
       <div className="w-full">
@@ -34,17 +30,16 @@ function App() {
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              convert();
             }}
           >
             <div className="w-full mb-1">
               <InputBox
                 label="From"
                 amount={amount}
-                currencyOptions={options}
-                onCurrencyChange={(currency) => setFrom(currency)}
-                selectCurrency={from}
                 onAmountChange={(amount) => setAmount(amount)}
+                selectCurrency={from}
+                onCurrencyChange={(currency) => setFrom(currency)}
+                currencyOptions={options}
               />
             </div>
             <div className="relative w-full h-0.5">
@@ -60,9 +55,9 @@ function App() {
               <InputBox
                 label="To"
                 amount={convertedAmount}
-                currencyOptions={options}
-                onCurrencyChange={(currency) => setTo(currency)}
                 selectCurrency={to}
+                onCurrencyChange={(currency) => setTo(currency)}
+                currencyOptions={options}
                 amountDisable
               />
             </div>
@@ -70,7 +65,7 @@ function App() {
               type="submit"
               className="w-full bg-blue-600 text-white px-4 py-3 rounded-lg"
             >
-              Convert {from.toUpperCase()} to {to.toUpperCase()}
+              Convert {from} to {to}
             </button>
           </form>
         </div>
